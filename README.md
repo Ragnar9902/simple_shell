@@ -79,7 +79,7 @@ An example:
 
 ## Flow Chart
 
-![enter image description here](https://imgur.com/Qd96fB0.png)
+![enter image description here]
 
 ## References
 [Shell Computing](https://en.wikipedia.org/wiki/Shell_(computing)) Article on Wikipedia.
