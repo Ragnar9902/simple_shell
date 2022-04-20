@@ -43,10 +43,10 @@ int hsh_num_builtins() {
 int hsh_cd(char **args)
 {
 
-  if (args[1] == NULL) {
+    if (args[1] == NULL) {
     fprintf(stderr, "lsh: expected argument to \"cd\"\n");
   } else {
-    if (0 != 0) {
+    if (chdir(args[1]) != 0) {
       perror("lsh");
     }
   }
@@ -57,29 +57,29 @@ int hsh_cd(char **args)
 int hsh_help(char **args)
 {
 	int i;
-
-    if (args[1] == NULL) {
-    fprintf(stderr, "lsh: expected argument to \"cd\"\n");
-  }
-
-
-
-	for (i = 0; i < hsh_num_builtins(); i++)
-	{
-		printf("  %s\n", builtin_str[i]);
+	if (args[1] == NULL){
 	}
+  	printf("simple shell\n");
+  	printf("Type program names and arguments, and hit enter.\n");
+  	printf("The following are built in:\n");
 
-	printf("Use the man command for information on other programs.\n");
-	return (1);
+  	for (i = 0; i < hsh_num_builtins(); i++) {
+    		printf("  %s\n", builtin_str[i]);
+  	}
+
+  	printf("Use the man command for information on other programs.\n");
+  	return 1;
+	
 }
 
 int hsh_exit(char **args)
 {
+	if (args[1] == NULL){
+		printf("exit of the shell");
+        }
 
-	if (args[1] == NULL) {
-    		fprintf(stderr, "lsh: expected argument to \"cd\"\n");
-  	}
-  return 0;
+
+	return 0;
 
 }
 
