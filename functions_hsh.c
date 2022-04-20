@@ -185,7 +185,7 @@ void hsh_loop(void)
 	int status;
 
   do {
-    printf(">$>>");
+    printf("#cisfun$");
     line = hsh_read_line();
     args = hsh_split_line(line);
     status = hsh_execute(args);
