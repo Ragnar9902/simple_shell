@@ -6,9 +6,13 @@
 #include <stddef.h>
 #include "main.h"
 
+/**
+ * @main:
+ *
+ */
 
 
-int main()
+int main(void)
 {
 	  hsh_loop();
 	  return 1;
