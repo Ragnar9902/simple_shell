@@ -10,20 +10,6 @@
 
 int main()
 {
-	  char *line;
-  char **args;
-  int status;
-
-  do {
-    printf("> ");
-    line = hsh_read_line();
-    args = hsh_split_line(line);
-    status = hsh_execute(args);
-
-    free(line);
-    free(args);
-  } while (status);
-
-
-	return 1;
+	  hsh_loop();
+	  return 1;
 }
