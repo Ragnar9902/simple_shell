@@ -138,6 +138,7 @@ char **hsh_split_line(char *line)
 int hsh_launch(char **args)
 {
 	pid_t pid;
+	int status;
 
   	pid = fork();
   	if (pid == 0) {
@@ -152,7 +153,7 @@ int hsh_launch(char **args)
   	} else {
     	/* Parent process*/
     	
-      	
+      		waitpid(pid, &status, WUNTRACED);
     	
   	}
 
