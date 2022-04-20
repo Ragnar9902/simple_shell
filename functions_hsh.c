@@ -140,6 +140,12 @@ int hsh_launch(char **args)
 	pid_t pid;
 	int status;
 
+	if (args[0] == NULL) {
+    		/* An empty command was entered.*/
+    		return 1;
+	}
+
+
   	pid = fork();
   	if (pid == 0) {
     	/* Child process*/
