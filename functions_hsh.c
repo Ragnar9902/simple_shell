@@ -9,26 +9,29 @@
 #define LSH_RL_BUFSIZE 1024
 #define LSH_TOK_BUFSIZE 64
 #define LSH_TOK_DELIM " \t\r\n\a"
+extern char **environ;
 /*
  * Function Declarations for builtin shell commands:
  */
 int hsh_cd(char **args);
 int hsh_help(char **args);
 int hsh_exit(char **args);
-
+int hsh_env(char **args);
 /*
  * List of builtin commands, followed by their corresponding functions.
  */
 char *builtin_str[] = {
 	"cd",
 	"help",
-	"exit"
+	"exit",
+	"env"
 };
 
 int (*builtin_func[]) (char **) = {
 	&hsh_cd,
 	&hsh_help,
-	&hsh_exit
+	&hsh_exit,
+	&hsh_env
 };
 
 
@@ -81,6 +84,21 @@ int hsh_exit(char **args)
 
 	return 0;
 
+}
+
+int hsh_env(char **args)
+{
+	char **s = environ;
+	if (args[1] == NULL){
+        	printf("exit of the shell");
+        }
+
+
+  	for (; *s; s++) {
+    	printf("%s\n", *s);
+  	}
+
+  	return 0;
 }
 
 char *hsh_read_line(void)
