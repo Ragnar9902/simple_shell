@@ -7,13 +7,11 @@
 #include "main.h"
 
 /**
- * @main:
- *
+ * main - Main function for shell
+ * Return: Always 1
  */
-
-
 int main(void)
 {
-	  hsh_loop();
-	  return 1;
+	hsh_loop();
+	return (1);
 }

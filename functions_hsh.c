@@ -9,26 +9,29 @@
 #define LSH_RL_BUFSIZE 1024
 #define LSH_TOK_BUFSIZE 64
 #define LSH_TOK_DELIM " \t\r\n\a"
+extern char **environ;
 /*
  * Function Declarations for builtin shell commands:
  */
 int hsh_cd(char **args);
 int hsh_help(char **args);
 int hsh_exit(char **args);
-
+int hsh_env(char **args);
 /*
  * List of builtin commands, followed by their corresponding functions.
  */
 char *builtin_str[] = {
 	"cd",
 	"help",
-	"exit"
+	"exit",
+	"env"
 };
 
 int (*builtin_func[]) (char **) = {
 	&hsh_cd,
 	&hsh_help,
-	&hsh_exit
+	&hsh_exit,
+	&hsh_env
 };
 
 /**
@@ -52,6 +55,7 @@ int hsh_num_builtins(void)
 int hsh_cd(char **args)
 {
 
+<<<<<<< HEAD
 	if (args[1] == NULL)
 	{
 		fprintf(stderr, "lsh: expected argument to \"cd\"\n");
@@ -63,13 +67,29 @@ int hsh_cd(char **args)
 		}
 	}
 	return (1);
+=======
+    if (args[1] == NULL) {
+    fprintf(stderr, "lsh: expected argument to \"cd\"\n");
+  } else {
+    if (chdir(args[1]) != 0) {
+      perror("lsh");
+    }
+  }
+  return 1;
+>>>>>>> 6ef93be3e9f1d6196985b5d3b3fce22cb989becc
 
 }
 
 int hsh_help(char **args)
 {
 	int i;
+	if (args[1] == NULL){
+	}
+  	printf("simple shell\n");
+  	printf("Type program names and arguments, and hit enter.\n");
+  	printf("The following are built in:\n");
 
+<<<<<<< HEAD
 	if (args[1] == NULL)
 	{
 		fprintf(stderr, "lsh: expected argument to \"cd\"\n");
@@ -79,19 +99,49 @@ int hsh_help(char **args)
 	{
 		printf("  %s\n", builtin_str[i]);
 }
+=======
+  	for (i = 0; i < hsh_num_builtins(); i++) {
+    		printf("  %s\n", builtin_str[i]);
+  	}
 
-	printf("Use the man command for information on other programs.\n");
-	return (1);
+  	printf("Use the man command for information on other programs.\n");
+  	return 1;
+	
 }
 
 int hsh_exit(char **args)
 {
+	if (args[1] == NULL){
+		printf("exit of the shell");
+        }
+
+>>>>>>> 6ef93be3e9f1d6196985b5d3b3fce22cb989becc
+
+	return 0;
+
+}
+
+int hsh_env(char **args)
+{
+<<<<<<< HEAD
 	if (args[1] == NULL)
 	{
 		fprintf(stderr, "lsh: expected argument to \"cd\"\n");
 	}
 	return (0);
+=======
+	char **s = environ;
+	if (args[1] == NULL){
+        	printf("exit of the shell");
+        }
 
+
+  	for (; *s; s++) {
+    	printf("%s\n", *s);
+  	}
+>>>>>>> 6ef93be3e9f1d6196985b5d3b3fce22cb989becc
+
+  	return 0;
 }
 
 char *hsh_read_line(void)
@@ -154,6 +204,7 @@ int hsh_launch(char **args)
 	pid_t pid;
 	int status;
 
+<<<<<<< HEAD
 	pid = fork();
 	if (pid == 0)
 	{                    /* Child process*/
@@ -170,6 +221,30 @@ int hsh_launch(char **args)
 		waitpid(pid, &status, WUNTRACED);
 
 	}
+=======
+	if (args[0] == NULL) {
+    		/* An empty command was entered.*/
+    		return 1;
+	}
+
+
+  	pid = fork();
+  	if (pid == 0) {
+    	/* Child process*/
+    	if (execvp(args[0], args) == -1) {
+      	perror("lsh");
+    	}
+    	exit(EXIT_FAILURE);
+  	} else if (pid < 0) {
+    	/* Error forking*/
+    	perror("lsh");
+  	} else {
+    	/* Parent process*/
+    	
+      		waitpid(pid, &status, WUNTRACED);
+    	
+  	}
+>>>>>>> 6ef93be3e9f1d6196985b5d3b3fce22cb989becc
 
 	return (1);
 }
