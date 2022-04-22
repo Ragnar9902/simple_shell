@@ -1,24 +1,4 @@
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <stddef.h>
-
-#define LSH_RL_BUFSIZE 1024
-#define LSH_TOK_BUFSIZE 64
-#define LSH_TOK_DELIM " \t\r\n\a"
-
-extern char **environ;
-
-/*
- * Function Declarations for builtin shell commands:
- */
-int hsh_cd(char **args);
-int hsh_help(char **args);
-int hsh_exit(char **args);
-int hsh_env(char **args);
 
 /*
  * List of builtin commands, followed by their corresponding functions.
@@ -37,7 +17,6 @@ int (*builtin_func[]) (char **) = {
 	&hsh_env
 };
 
-
 int hsh_num_builtins(void)
 {
 	return (sizeof(builtin_str) / sizeof(char *));
@@ -51,9 +30,10 @@ int hsh_cd(char **args)
 {
 
 	if (args[1] == NULL)
-	{
-	    fprintf(stderr, "lsh: expected argument to \"cd\"\n");
-	} else
+
+		fprintf(stderr, "lsh: expected argument to \"cd\"\n");
+
+	else
 	{
 		if (chdir(args[1]) != 0)
 		{
@@ -66,7 +46,7 @@ int hsh_cd(char **args)
 
 int hsh_help(char **args)
 {
-	int i = 0;
+	int i;
 
 	if (args[1] == NULL)
 	{
@@ -87,9 +67,7 @@ int hsh_help(char **args)
 int hsh_exit(char **args)
 {
 	if (args[1] == NULL)
-	{
 		printf("exit of the shell");
-	}
 
 	return (0);
 
@@ -100,13 +78,9 @@ int hsh_env(char **args)
 	char **s = environ;
 
 	if (args[1] == NULL)
-	{
 		printf("exit of the shell");
-	}
 	for (; *s; s++)
-	{
 		printf("%s\n", *s);
-	}
 
 	return (0);
 }
@@ -114,20 +88,13 @@ int hsh_env(char **args)
 char *hsh_read_line(void)
 {
 	char *line = NULL;
-
 	size_t bufsize = 0; /* have getline allocate a buffer for us */
 
-	if (getline(&line,&bufsize, stdin) == -1)
+	if (getline(&line, &bufsize, stdin) == -1)
 	{
-		if (feof(stdin))
-		{
-      exit(EXIT_SUCCESS);  /* We recieved an EOF*/
-    } else
-		{
-      perror("readline");
-      exit(EXIT_FAILURE);
-    }
-  }
+		if (*line == EOF)
+			exit(EXIT_SUCCESS);  /* We recieved an EOF*/
+	}
 
 	return (line);
 }
@@ -135,12 +102,13 @@ char *hsh_read_line(void)
 char **hsh_split_line(char *line)
 {
 	int bufsize = LSH_TOK_BUFSIZE, position = 0;
-	char **tokens = malloc(bufsize * sizeof(char *));
+	char **tokens = NULL;
 	char *token;
 
+	tokens = malloc(bufsize * sizeof(char *));
 	if (!tokens)
 	{
-		fprintf(stderr, "lsh: allocation error\n");
+		perror("lsh: allocation error\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -149,18 +117,6 @@ char **hsh_split_line(char *line)
 	{
 		tokens[position] = token;
 		position++;
-
-		if (position >= bufsize)
-		{
-			bufsize += LSH_TOK_BUFSIZE;
-			tokens = realloc(tokens, bufsize * sizeof(char *));
-			if (!tokens)
-			{
-				fprintf(stderr, "lsh: allocation error\n");
-				exit(EXIT_FAILURE);
-			}
-		}
-
 		token = strtok(NULL, LSH_TOK_DELIM);
 	}
 	tokens[position] = NULL;
@@ -172,65 +128,54 @@ int hsh_launch(char **args)
 	pid_t pid;
 	int status;
 
-	if (args[0] == NULL)
-	{         /* An empty command was entered.*/
+	if (args[0] == NULL)                      /* An empty command was entered.*/
 		return (1);
-	}
 
 	pid = fork();
 	if (pid == 0)
-	{    	/* Child process*/
+	{                     /* Child process*/
 		if (execvp(args[0], args) == -1)
-		{
 			perror("lsh");
-		}
 		exit(EXIT_FAILURE);
-	} else if (pid < 0)
-	{                   /* Error forking*/
+	} else if (pid < 0)                    /* Error forking*/
 		perror("lsh");
-	} else
-	{                 /* Parent process*/
-
-			waitpid(pid, &status, WUNTRACED);
-
- 	}
+	else                    /* Parent process*/
+		waitpid(pid, &status, WUNTRACED);
 
 	return (1);
 }
 
 int hsh_execute(char **args)
 {
-	int i;
+	int i = 0;
 
-  if (args[0] == NULL)
-	{                   /* An empty command was entered.*/
-    return (1);
-	}
+	if (args[0] == NULL)    /* An empty command was entered.*/
+		return (1);
 
-  for (i = 0; i < hsh_num_builtins(); i++)
+	for (i = 0; i < hsh_num_builtins(); i++)
 	{
 		if (strcmp(args[0], builtin_str[i]) == 0)
-			{
-				return (*builtin_func[i])(args);
-			}
-  }
+			return ((*builtin_func[i])(args));
+	}
 
 	return (hsh_launch(args));
 }
 
 void hsh_loop(void)
 {
-	char *line;
-	char **args;
-	int status;
+	char *line = NULL;
+	char **args = NULL;
+	int status = 0;
 
-  do {
-    printf("#cisfun$");
-    line = hsh_read_line();
-    args = hsh_split_line(line);
-    status = hsh_execute(args);
-
-	free(line);
-	free(args);
+	do {
+		if (isatty(STDIN_FILENO))
+			printf("#cisfun$");
+		line = hsh_read_line();
+		args = hsh_split_line(line);
+		status = hsh_execute(args);
+		free(line);
+		free(args);
+		if (!isatty(STDIN_FILENO))
+			status = 0;
 	} while (status);
 }
