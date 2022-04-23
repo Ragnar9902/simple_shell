@@ -165,9 +165,9 @@ void hsh_loop(void)
 {
 	char *line = NULL;
 	char **args = NULL;
-	int status = 0;
+	int status = 1;
 
-	do {
+	while (status) {
 		if (isatty(STDIN_FILENO))
 			printf("#cisfun$");
 		line = hsh_read_line();
@@ -176,5 +176,5 @@ void hsh_loop(void)
 		free(line);
 		free(args);
 	
-	} while (status);
+	} 
 }
