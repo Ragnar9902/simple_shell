@@ -168,8 +168,8 @@ void hsh_loop(void)
 	int status = 1;
 
 	while (status) {
-		if (isatty(STDIN_FILENO))
-			printf("#cisfun$");
+		
+		printf("#cisfun$");
 		line = hsh_read_line();
 		args = hsh_split_line(line);
 		status = hsh_execute(args);
