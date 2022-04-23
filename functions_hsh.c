@@ -175,7 +175,6 @@ void hsh_loop(void)
 		status = hsh_execute(args);
 		free(line);
 		free(args);
-		if (!isatty(STDIN_FILENO))
-			status = 0;
+	
 	} while (status);
 }
